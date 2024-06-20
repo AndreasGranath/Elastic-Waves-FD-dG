@@ -1,7 +1,9 @@
-close all
+%% Add "Data" folder to path before running this code
 
+close all
+%% Plot discrete errors for the trigonometric experiment in a continuous material
 figure
-% Plot trigonometric errors
+
 Hq=[1/20,1/30,1/40,1/50,1/60,1/70];
 load("Trigonometric_EOC_4thOrder.mat")
 
@@ -18,7 +20,7 @@ xlabel("h","Interpreter","latex")
 ylabel("Discrete error")
 fontsize(gcf,20,"points")
 
-%%
+%% Plot discrete errors from the Stoneley experiment
 figure
 % Plot Stoneley errors
 Hq=[1/20,1/30,1/40,1/50,1/60,1/70];
@@ -36,7 +38,8 @@ legend("4th order","$h^4$","6th order","$h^6$","Interpreter","latex","Location",
 xlabel("h","Interpreter","latex")
 ylabel("Discrete error")
 fontsize(gcf,20,"points")
-%%
+%% Plot the eigenvalues of the semidiscretizations with shifted node
+
 figure
 load("ShiftedEigenvalues.mat")
 delta=[1e-6 5e-6 1e-5 5e-5 5e-5 1e-4 5e-4 1e-3 5e-3 1e-2 5e-2];
@@ -49,3 +52,31 @@ xlabel("Shift parameter $\delta$","Interpreter","latex")
 ylabel("$\max_i|e_i|$","Interpreter","latex")
 legend("$h=1/10$","$h=1/15$","$h=1/20$","$h=1/30$","Interpreter","latex","location","best")
 fontsize(gcf,15,"points")
+
+%% Plot Gaussian pulse saved at six different time steps in U, U(1,:),U(2,:),U(5,:) and U(6,:) used in manuscript
+
+load("GaussianTestData.mat")
+GammaCoord=1/5;
+
+u3=U(6,:);
+surf(X,Y,reshape(sqrt(u3(1:nx*ny).^2+u3(nx*ny+1:2*nx*ny).^2),[ny,nx]))
+hold on
+yline(GammaCoord,'LineWidth',2)
+    
+trisurf(T_linear',full(P_linear(1,:)),full(P_linear(2,:)),full(sqrt(u3(2*nx*ny+p1_indices).^2+u3(2*nx*ny+NDoFs+p1_indices).^2)))                 
+set(gca, 'color', 'none');
+set(gca,'LooseInset',get(gca,'TightInset'));
+           
+axis off   
+axis equal
+           
+shading interp
+colormap jet
+caxis([-5 155])
+grid off
+hold off
+view(2)
+
+%colorbar
+
+              

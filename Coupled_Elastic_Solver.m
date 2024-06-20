@@ -89,11 +89,11 @@ function  [TractiondG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E
 
     % Construct analytical geometry objects so that it is possible to e.g.
     % remove sections of the mesh if desired
-    %%
+
 
       [pdG,edG,tdG]=meshToPet(mesh_FEM);
       tdG(4,:)=[];
-%     
+    
     if shift~=0
         InterfaceNumber=intersect(find(pdG(1,:)==0.8),find(pdG(2,:)==GammaCoord));
         pdG(1,InterfaceNumber)=pdG(1,InterfaceNumber)-shift*hdG;
@@ -104,10 +104,10 @@ function  [TractiondG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E
     % F is the flux matrix. Also assemble 2xNumDoFs matrix P of nodal values
     % and triangulation matrix T modified according to the desired order
 
-  %  disp('Asembling dG bulk')
+    disp('Asembling dG bulk')
 
 
-         [AdG,MdG,P,T,TractiondG,Mbdry,Nglob]=dG_data(pdG,tdG,mu2,lambda2,hdG,alpha,order);
+    [AdG,MdG,P,T,TractiondG,Mbdry,Nglob]=dG_data(pdG,tdG,mu2,lambda2,hdG,alpha,order);
 
     NDoFs=length(P(1,:));
     npts=(order+1)*(order+2)/2;
@@ -118,41 +118,46 @@ function  [TractiondG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E
 
     %MI=inv(MdG);
     AdG=MI*AdG;
-    %EdgeIndices=[20,1,2,19];
-    EdgeIndices=[1,2,3,4];
-    %EdgeIndices=[2,1,4,3];
+
+    % Modify edge indices depending of what experiment you want to perform
+
+    %EdgeIndices=[20,1,2,19]; % Gaussian pulse in UMU geometry
+    EdgeIndices=[1,2,3,4];    % Trigonometric and stoneley examples
+    %EdgeIndices=[2,1,4,3];   % Curved geometry example
+
+    % Construct matrices picking up DOFS along the boundaries
     [EdG,EdG_t,permInds,indicesOnInterface,EdG_E,EdG_S,EdG_W,bdryIndices,n_E,n_S]=AssembleBoundaryFindingMatrix(edG,tdG,P,T,order,EdgeIndices);
 
     EdG_E=kron(eye(2),EdG_E); EdG_W=kron(eye(2),EdG_W); 
     EdG_S=kron(eye(2),EdG_S);
 
-    %%
-    mE=hdG/2*kron(eye(n_E),NewoneDimMassMatrix(@LagrangeRbf,order+1));
-    mgamma=hdG/2*kron(eye(nx-1),NewoneDimMassMatrix(@LagrangeRbf,order+1));
-    mS=hdG/2*kron(eye(n_S),NewoneDimMassMatrix(@LagrangeRbf,order+1));
     EdG=kron(eye(2),EdG);
     EdG_t=kron(eye(2),EdG_t);
     EFD=ES;
-    % Extract indices for boundaries
 
+ % Extract indices for boundaries
     i_E=nonzeros(bdryIndices(1,:)); i_S=nonzeros(bdryIndices(2,:));
     i_W=nonzeros(bdryIndices(3,:));
+   % Assemble quadrature matrices  
 
-   % disp("Assembling boundary quadratures for interface")
+    mE=hdG/2*kron(eye(n_E),NewoneDimMassMatrix(@LagrangeRbf,order+1));
+    mgamma=hdG/2*kron(eye(nx-1),NewoneDimMassMatrix(@LagrangeRbf,order+1));
+    mS=hdG/2*kron(eye(n_S),NewoneDimMassMatrix(@LagrangeRbf,order+1));
+
+
      Mgamma=sparse(NDoFs,NDoFs); 
      Mgamma(indicesOnInterface(permInds),indicesOnInterface(permInds))=mgamma;
      Mgamma(i_S,i_S)=mS;
      Mgamma=kron(eye(2),Mgamma);
-        %Mgamma=EdG*kron(eye(2),Mbdry);
-   % Mgamma(indicesOnInterface(permInds),indicesOninterface(permInds))=;
+    
+     M_EW=sparse(NDoFs,NDoFs);
+     M_EW(i_E,i_E)=mE; M_EW(i_W,i_W)=mE;
+     M_EW=kron(eye(2),M_EW);
 
-    M_EW=sparse(NDoFs,NDoFs);
-    M_EW(i_E,i_E)=mE; M_EW(i_W,i_W)=mE;
-    M_EW=kron(eye(2),M_EW);
-
-   % disp("Assembling projection operators")
+    % Construct projection operators
+   
     [pw2uG,pw2uB,pu2wG,pu2wB]=ConstructFullProjs(0:h1:x_l,AddLagrangeNodes(0:hdG:x_l,order),order);
-    %[pw2u,pu2w]=make_projection_bad_bad(length(xFD),3);
+
     
     pw2uG=pw2uG/x_l;pw2uB=pw2uB/x_l;pu2wG=pu2wG/x_l;pu2wB=pu2wB/x_l;
 
@@ -176,11 +181,13 @@ function  [TractiondG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E
     Pu2wG=kron(eye(2),Pu2wG); Pu2wB=kron(eye(2),Pu2wB);
 
 
-    % ----------------
-   % disp("Assembling interface flux terms")
+    % Assemble traction operators
     TFDy=-ES*Ty; TractiondG=TractiondG*EdG_t;
    
+    % Determine min_K h_K
     hdGmin=mesh_FEM.MinElementSize;
+
+    % Assemble SAT and numerical flux terms
     SAT_dG_c=0.5*HI*(-(TFDy)'*Hx*Pu2wG*EdG+2*alpha*chi1/hdGmin*EFD*Hx*Pu2wB*EdG+...
         +2*beta*chi2/h1*EFD*Hx*Pu2wG*EdG);
 
@@ -206,6 +213,8 @@ function  [TractiondG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E
 
 
     BULK_t=[1/rho1*SAT_FD_t, 1/rho1*SAT_dG_t; 1/rho2*FLUX_FD_t, 1/rho2*FLUX_dG_t];
+   
+    % Assemble total bulk matrix for semidiscretization
 
     ABulk=[1/rho1*AFD, sparse(2*NxFD*NyFD,2*NDoFs); sparse(2*NDoFs,2*NxFD*NyFD), 1/rho2*AdG]+BULK_c1+BULK_t;
 

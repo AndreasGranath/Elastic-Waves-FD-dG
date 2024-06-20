@@ -196,4 +196,4 @@ Error(q)=sqrt(FDError(q)^2+dGL2Error(q)^2);
     end
  end
 
-save("CurvedEOC_4thOrder.mat","mat_param","tau","dt","tend","Error","EOC")
+%save("CurvedEOC_4thOrder.mat","mat_param","tau","dt","tend","Error","EOC")
