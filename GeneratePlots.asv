@@ -1,0 +1,44 @@
+close all
+clf
+
+% Plot trigonometric errors
+Hq=[1/20,1/30,1/40,1/50,1/60,1/70];
+load("Trigonometric_EOC_4thOrder.mat")
+
+loglog(Hq,Error,'-o','LineWidth',1.5,'Color','red')
+hold on
+loglog(Hq,35.*Hq.^4,'-.','LineWidth',1.5,'Color','red')
+
+load("Trigonometric_EOC_6thOrder.mat")
+loglog(Hq,Error,'-x','LineWidth',1.5,'Color','blue')
+hold on
+loglog(Hq,2.7e2.*Hq.^5,'--','LineWidth',1.5,'Color','blue')
+legend("4th order","$h^4$","6th order","$h^5$","Interpreter","latex","Location","southeast")
+xlabel("h","Interpreter","latex")
+ylabel("Discrete error")
+fontsize(gcf,20,"points")
+
+%%
+clf
+% Plot Stoneley errors
+Hq=[1/20,1/30,1/40,1/50,1/60,1/70];
+load("Stoneley_EOC_4thOrder.mat")
+
+loglog(Hq,Error,'-o','LineWidth',1.5,'Color','red')
+hold on
+loglog(Hq,4e4.*Hq.^4,'-.','LineWidth',1.5,'Color','red')
+
+load("Stoneley_EOC_6thOrder.mat")
+loglog(Hq,Error,'-x','LineWidth',1.5,'Color','blue')
+hold on
+loglog(Hq,4e5.*Hq.^5,'--','LineWidth',1.5,'Color','blue')
+legend("4th order","$h^4$","6th order","$h^6$","Interpreter","latex","Location","southeast")
+xlabel("h","Interpreter","latex")
+ylabel("Discrete error")
+fontsize(gcf,20,"points")
+%%
+clf
+
+semilogx(EIGS(1,:),'-o')
+hold on
+semilogx(EIG(2,:))

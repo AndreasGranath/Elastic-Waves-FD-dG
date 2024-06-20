@@ -1,0 +1,33 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% DESCRIPTION: calculates the discrete l^2 projection error to the leading
+%              order as dictated by the input 'order' when projecting          
+%              between xa and xb with a bad operator Pf1 and between xb and
+%              xa using a good operator Pf2.
+%              
+%
+% INPUT : - xa,xb: vectors containing the two grids that we want to project
+%                  between
+%
+%        - order: the polynomial order of the dG method used
+%
+%        - Pf2,Pf2: projection operators between xa and xb as functions of  
+%                   a set of free parameters
+%
+%         - x: a vector containing a choice of free parameters to use in
+%             the projection operators
+%
+% OUTPUT: - err: a scalar, the l^2 error
+%
+% AUTHOR:  Andreas Granath (andreas.granath@umu.se)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function err=l2error_bad_good(Pf1,Pf2,x,xa,xb,order)
+    xcell=num2cell(x);
+    switch order
+      
+        case 3
+            err=sqrt(sum((Pf2(xcell{:})*xb.^3-xa.^3).^2)+sum((Pf1(xcell{:})*xa.^2-xb.^2).^2)); 
+        case 4    
+            err=sqrt(sum((Pf2(xcell{:})*xb.^4-xa.^4).^2)+sum((Pf1(xcell{:})*xa.^3-xb.^3).^2)); 
+    end
+end
