@@ -80,26 +80,21 @@ view(2)
 %colorbar
 
 %%
-load("SeismicSurvey2.mat")
+load("UpperSurvey.mat")
 NS=[length(nonzeros(US(2,:)));length(nonzeros(US(4,:)));length(nonzeros(US(6,:)));length(nonzeros(US(8,:)))]
 figure
-%plot(US(2,6:6:NS(1)),US(1,6:6:NS(1)),'LineWidth',1.5)
+plot(US(2,6:6:NS(1)),US(1,6:6:NS(1)),'LineWidth',1.5)
 hold on
 plot(US(4,8:8:NS(2)),US(3,8:8:NS(2)),'LineWidth',1.5)
 plot(US(6,12:12:NS(3)),US(5,12:12:NS(3)),'LineWidth',1.5)
 plot(US(8,16:16:NS(4)),US(7,16:16:NS(4)),'LineWidth',1.5)
-
-US=[];
-load("n200GaussianSurvey.mat")
-NS=length(nonzeros(US(2,:)));
-plot(US(2,20:20:NS(1)),US(1,20:20:NS(1)),'LineWidth',1.5)
-legend("h=1/80","h=1/120","h=1/160","h=1/200","exact")
+legend("h=1/60","h=1/80","h=1/120","h=1/160")
 xlabel("time $t$","interpreter","latex")
-ylabel("$|u(0.9,0.4,t)|$","Interpreter","latex")
+ylabel("$|u(0.1,1.8,t)|$","Interpreter","latex")
 ax=gca;
 ax.FontSize=16;
 
-%%
+load("LowerSurvey.mat")
 figure
 plot(US(2,(NS(1)-1)/2:6:NS(1)),US(1,(NS(1)-1)/2:6:NS(1)),'LineWidth',1.5)
 hold on
