@@ -40,14 +40,14 @@ function [Pu2v_b,Pv2u_g,Pu2v_g,Pv2u_b]= make_projection_FD(N,order)
     % depending on the order
 
     if order==3
-      load('bad_good_Coeffs_3rd_order_AccuracyEigfminsearch.mat');
+      load('bad_good_Coeffs_3rd_order.mat');
 
       % Assemble inverse SBP norm
 
        [~,HI]= diagonal_sbp(4,N-1);
 
     elseif order==4
-      load('good_bad_Coeffs_4th_order_EigAccuracy.mat');
+      load('bad_good_Coeffs_4th_order.mat');
 
       % Assemble inverse SBP norm
        [~,HI]= diagonal_sbp(6,N-1);
@@ -73,10 +73,10 @@ function [Pu2v_b,Pv2u_g,Pu2v_g,Pv2u_b]= make_projection_FD(N,order)
     % Construct projection between x_v and x_u using norm-compatibility
     Pv2u_g=H\((M*Pu2v_b)');
     if order==3
-      load('good_bad_Coeffs_3rd_order_AccuracyEigfminsearch.mat');
+      load('good_bad_Coeffs_3rd_order.mat');
  
     elseif order==4
-      load('bad_good_Coeffs_4th_order_EigAccuracy.mat');
+      load('good_bad_Coeffs_4th_order.mat');
   
     end
 
