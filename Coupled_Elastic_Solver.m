@@ -140,8 +140,10 @@ function  [TractiondG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E
     i_W=nonzeros(bdryIndices(3,:));
    % Assemble quadrature matrices  
 
+   n_interface=length(indicesOnInterface)/(order+1);
+
     mE=hdG/2*kron(eye(n_E),NewoneDimMassMatrix(@LagrangeRbf,order+1));
-    mgamma=hdG/2*kron(eye(nx-1),NewoneDimMassMatrix(@LagrangeRbf,order+1));
+    mgamma=hdG/2*kron(eye(n_interface),NewoneDimMassMatrix(@LagrangeRbf,order+1));
     mS=hdG/2*kron(eye(n_S),NewoneDimMassMatrix(@LagrangeRbf,order+1));
 
 

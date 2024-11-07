@@ -31,11 +31,11 @@ v_s=max([sqrt((2*mu1+lambda1)/rho2),sqrt((2*mu2+lambda2)/rho2)]);
 % semi-discretizations at the interface, note that it is scaled by the
 % maximal wavespeed
 
- tau=60;
+ tau=30;
 
  % Initialize vector for errors
 Num_Refinements=6;
-Error=zeros(1,Num_Refinements); order=4;
+Error=zeros(1,Num_Refinements); order=3;
 
 Hq_dG=zeros(1,Num_Refinements); Hq=zeros(1,Num_Refinements);
 
@@ -79,7 +79,7 @@ w1=@(t,x,y) sin(5.*x+7.*y-t); w2=@(t,x,y) cos(7.*x+5.*y-2.*t);
 uex=@(t,x,y) [w1(t,x,y);w2(t,x,y)];
 
 % Set time stepping properties
- tend=1; dt=0.015*hdG; NumTimeSteps=round(tend/dt);
+ tend=1; dt=0.015*hdG; NumTimeSteps=round(tend/dt); tend=NumTimeSteps*dt;
 
 
 

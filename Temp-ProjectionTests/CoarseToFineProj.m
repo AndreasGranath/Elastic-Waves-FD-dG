@@ -1,6 +1,6 @@
 
 
-function Pa2g=CoarseToFineProj(xa,xg,order)
+function [Pa2g,Pg2a]=CoarseToFineProj(xa,xg,order)
 
 
 TOL=10*eps;

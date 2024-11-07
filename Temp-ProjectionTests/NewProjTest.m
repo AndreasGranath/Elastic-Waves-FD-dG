@@ -5,9 +5,10 @@ addpath('..\FD-dG utility codes\')
 % Currently set to different number of nodes to show the error which
 % arises, if they are set to be equal it behaves as expectedly
 
-na=201; % FD nodes
+for q=1:1
+na=314*q+1; % FD nodes
 
-nb=261; % DG nodes, adds higher order nodes between these later
+nb=172*q+1; % DG nodes, adds higher order nodes between these later
 
 [H,~,~,~]=SBP4(na,1/(na-1)); %SBP quadrature
 
@@ -43,8 +44,8 @@ Mb=zeros(N*Nb,N*Nb);
 % Construct projection operators from FD polynomial grid to glue grid and
 % from dG grid with internal DoFS to glue grid
 
-Pa2g=CoarseToFineProj(xa,xg,order);
-Pb2g=CoarseToFineProj(xb,xg,order);
+[Pa2g,Pg2a]=FineToCoarseProj(xa,xg,order);
+[Pb2g,Pg2b]=FineToCoarseProj(xb,xg,order);
 
 
 % Construct mass matrices
@@ -65,18 +66,18 @@ end
 
 
 % Use norm compatibility to construct operators from glue 
- Pg2a=Ma\((Mg*Pa2g)');
- Pg2b=Mb\((Mg*Pb2g)');
+ %Pg2a=Ma\((Mg*Pa2g)');
+ %Pg2b=Mb\((Mg*Pb2g)');
 
  % assemble the operators without using norm compatibility
-% Pg2a=Pa2g\eye(N*Ng);
-% Pg2b=Pb2g\eye(N*Ng);
+%Pg2a=Pa2g\eye(N*Ng);
+%Pg2b=Pb2g\eye(N*Ng);
 
 
 % Construct full operators from FD DoFS to dG nodes
 
 Pa2b=Pg2b*Pa2g*Pf2a_g;
-Pb2a=Pa2f_g*Pg2a*Pb2g;
+Pb2a=Pa2f_b*Pg2a*Pb2g;
 
 % Construct the piecewise polynomial grids
 XB=AddLagrangeNodes(xb,order);
@@ -84,28 +85,32 @@ XA=AddLagrangeNodes(xa,order);
 XG=AddLagrangeNodes(xg,order);
 %% Figure
 close all
-
-plot(XB,Pa2b*xa'-XB','LineWidth',1.5)
+plot(XB,Pa2b*xa.^0'-XB.^0','LineWidth',1.5)
 hold on
+plot(XB,Pa2b*xa'-XB','LineWidth',1.5)
 plot(XB,Pa2b*xa.^2'-XB.^2','LineWidth',1.5)
 plot(XB,Pa2b*xa.^3'-XB.^3','LineWidth',1.5)
-legend('Linear','Quadratic','Cubic')
+legend('Constant','Linear','Quadratic','Cubic')
 title('a to b')
 
 figure
-plot(xa,Pb2a*XB'-xa','LineWidth',1.5)
+plot(xa,Pb2a*XB.^0'-xa.^0','LineWidth',1.5)
 hold on
+plot(xa,Pb2a*XB'-xa','LineWidth',1.5)
+
 plot(xa,Pb2a*XB.^2'-xa.^2','LineWidth',1.5)
 plot(xa,Pb2a*XB.^3'-xa.^3','LineWidth',1.5)
-legend('Linear','Quadratic','Cubic')
+legend('Constant','Linear','Quadratic','Cubic')
 title('b to a')
 
 %% Display errors
 disp(['Max linear error from a to glue ' num2str([max(Pa2g*XA'-XG')])])
 disp(['Max linear error from b to glue ' num2str([max(Pb2g*XB'-XG')])])
+disp(['Max constant error from a to b ' num2str([max(Pa2b*xa.^0'-XB.^0')])])
 disp(['Max linear error from a to b ' num2str([max(Pa2b*xa'-XB')])])
 disp(['Max quadratic error from a to b ' num2str([max(Pa2b*xa.^2'-XB.^2')])])
 disp(['Max cubic error from a to b' num2str([max(Pa2b*xa.^3'-XB.^3')])])
+disp(['Max constant error from b to a ' num2str([max(Pb2a*XB.^0'-xa.^0')])])
 disp(['Max linear error from b to a ' num2str([max(Pb2a*XB'-xa')])])
 disp(['Max quadratic error from b to a ' num2str([max(Pb2a*XB.^2'-xa.^2')])])
 disp(['Max cubic error from b to a' num2str([max(Pb2a*XB.^3'-xa.^3')])])
@@ -113,5 +118,10 @@ disp(['Max cubic error from b to a' num2str([max(Pb2a*XB.^3'-xa.^3')])])
 
 
        
+max_const_err_a2b(q)=[max(Pa2b*xa.^0'-XB.^0')];
+max_const_err_bra(q)=[max(Pb2a*XB.^0'-xa.^0')];
+end
+
+%% ONE CELL TEST
 
 
