@@ -4,21 +4,19 @@ Na=2; Nb=4; N=order+1;
 
 TOL=100*eps;
 
-xa=AddLagrangeNodes([0:1/(Na-1):1],order)';
+xa_l=1;
+xa=AddLagrangeNodes([0,xa_l],order)';
 xb=AddLagrangeNodes([0:1/(Nb-1):1],order)';
 
 % Construct vandermonde matrix
 Va=Vandermonde(xa,order);
 Vb=Vandermonde(xb,order);
 
-Ma=0.5/(Na-1)*kron(eye(Na-1),NewoneDimMassMatrix(@LagrangeRbf,order+1));
+Ma=xa_l/2*NewoneDimMassMatrix(@LagrangeRbf,order+1);
 Mb=0.5/(Nb-1)*kron(eye(Nb-1),NewoneDimMassMatrix(@LagrangeRbf,order+1));
 
 % Here norm compatibility works
 Pa2b=Vb/Va; Pb2a=Ma\(Pa2b'*Mb);
-
-
-
 
 %% Close all
 close all
@@ -36,3 +34,14 @@ plot(Pb2a*xb-xa)
 plot(Pb2a*xb.^2-xa.^2)
 
 
+%%  Element with shifted node
+
+xc=AddLagrangeNodes([0,0.72,1],order)';
+Vc=Vandermonde(xc,order);
+
+Mc=zeros(2*N,2*N);
+
+Mc(1:4,1:4)=(xc(4)-xc(1))/2*NewoneDimMassMatrix(@LagrangeRbf,order+1);
+Mc(5:8,5:8)=(xc(8)-xc(5))/2*NewoneDimMassMatrix(@LagrangeRbf,order+1);
+
+Pa2c=Vc/Va; Pc2a=Ma\(Pa2c'*Mc);
