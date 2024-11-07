@@ -121,8 +121,8 @@ function  [TractiondG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E
 
     % Modify edge indices depending of what experiment you want to perform
 
-    EdgeIndices=[20,1,2,19]; % Gaussian pulse in UMU geometry
-    %EdgeIndices=[1,2,3,4];    % Trigonometric and stoneley examples
+    %EdgeIndices=[20,1,2,19]; % Gaussian pulse in UMU geometry
+    EdgeIndices=[1,2,3,4];    % Trigonometric and stoneley examples
     %EdgeIndices=[2,1,4,3];   % Curved geometry example
 
     % Construct matrices picking up DOFS along the boundaries
