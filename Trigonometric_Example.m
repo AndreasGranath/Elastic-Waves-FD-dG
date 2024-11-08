@@ -31,10 +31,13 @@ v_s=max([sqrt((2*mu1+lambda1)/rho2),sqrt((2*mu2+lambda2)/rho2)]);
 % semi-discretizations at the interface, note that it is scaled by the
 % maximal wavespeed
 
- tau=30;
+ tau=60;
+ 
 
  % Initialize vector for errors
-Num_Refinements=6;
+Num_Refinements=12;
+ SystemSizeFD=zeros(1,Num_Refinements);
+ SystemSizedG=zeros(1,Num_Refinements);
 Error=zeros(1,Num_Refinements); order=3;
 
 Hq_dG=zeros(1,Num_Refinements); Hq=zeros(1,Num_Refinements);
@@ -51,9 +54,9 @@ EOC=zeros(1,Num_Refinements-1);
  % Set mesh sizes, discetize FD side with nx nodes, currently matching 
  % element sizes
 
- nx=10*(q+1)+1;
+ nx=30*(q+1)+1;
 
- hFD=x_l/(nx-1); hdG=hFD;
+ hFD=x_l/(nx-1); hdG=3*hFD;
 
  hy=(y_l-GammaCoord)/(nx-1);
 
@@ -68,8 +71,9 @@ EOC=zeros(1,Num_Refinements-1);
 
 [TdG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E,EdG_W,EdG_S,EdG,NDoFs,tdG,pdG,Mbdry,Nglob] = Coupled_Elastic_Solver(hdG,hFD,hy,mat_param,tau,GammaCoord,mesh_FEM,order,x_l,y_l,0);
 Mbdry=kron(eye(2),Mbdry);
-% Assemble analytic Stoneley solution and obtain the wave speed c
 
+% Obtain FD and dG system sizes
+SystemSizeFD(q)=size(HH,2); SystemSizedG(q)=size(Mgamma,2);
 %[S_FD,S_dG,uFD1,uFD2,vdG1,vdG2,c,S_dG_tt]=TwoBlockStoneley(0.5,mu1,mu2,lambda1,lambda2,rho1,rho2,GammaCoord,2*pi);
 
 % Define the exact solution
@@ -79,7 +83,7 @@ w1=@(t,x,y) sin(5.*x+7.*y-t); w2=@(t,x,y) cos(7.*x+5.*y-2.*t);
 uex=@(t,x,y) [w1(t,x,y);w2(t,x,y)];
 
 % Set time stepping properties
- tend=1; dt=0.015*hdG; NumTimeSteps=round(tend/dt); tend=NumTimeSteps*dt;
+ tend=1; dt=0.0125*hdG; NumTimeSteps=round(tend/dt); tend=NumTimeSteps*dt;
 
 
 
@@ -176,7 +180,7 @@ Error(q)=sqrt(FDError(q)^2+dGL2Error(q)^2);
 % From second refinement and onwards, calculate the EOC of the method
 
    if q>1    
-     EOC(q)=log(Error(q-1)/Error(q))/log(Hq_dG(q-1)/Hq_dG(q));
+     EOC(q)=log(Error(q-1)/Error(q))/log(Hq_dG(q-1)/Hq_dG(q))
    
     end
  end
@@ -186,4 +190,3 @@ Error(q)=sqrt(FDError(q)^2+dGL2Error(q)^2);
  hold on
  loglog(Hq,Hq.^5,'--','LineWidth',1.5,'Color','red')
 
-save("Trigonometric_EOC_6thOrder_4.mat","mat_param","tau","dt","tend","w1","w2","Error","EOC")

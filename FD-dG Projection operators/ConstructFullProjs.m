@@ -30,8 +30,9 @@ function [P_FD_2_dG_g,P_FD_2_dG_b,P_dG_2_FD_g,P_dG_2_FD_b]=ConstructFullProjs(x_
       [Pf2G_b,PG2f_g,Pf2G_g,PG2f_b]=make_projection_FD(nFD,order);
 
    % Construct projection ops between the glues
-    [PfdG2dg,PdgG2fd]=glue_projections(AddLagrangeNodes(x_FD,order),x_dG,order);
-
+    %[PfdG2dg,PdgG2fd]=glue_projections(AddLagrangeNodes(x_FD,order),x_dG,order);
+    ndG=length(x_dG)/(order+1)+1;
+    [PfdG2dg,PdgG2fd]=NewGlueProjections(ndG,order,1);   
     % Assemble full projection ops
     P_FD_2_dG_g=PfdG2dg*Pf2G_g;
     P_FD_2_dG_b=PfdG2dg*Pf2G_b;
