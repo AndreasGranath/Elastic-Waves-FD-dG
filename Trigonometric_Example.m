@@ -38,7 +38,7 @@ v_s=max([sqrt((2*mu1+lambda1)/rho2),sqrt((2*mu2+lambda2)/rho2)]);
 Num_Refinements=12;
  SystemSizeFD=zeros(1,Num_Refinements);
  SystemSizedG=zeros(1,Num_Refinements);
-Error=zeros(1,Num_Refinements); order=3;
+Error=zeros(1,Num_Refinements); order=4;
 
 Hq_dG=zeros(1,Num_Refinements); Hq=zeros(1,Num_Refinements);
 
@@ -54,9 +54,9 @@ EOC=zeros(1,Num_Refinements-1);
  % Set mesh sizes, discetize FD side with nx nodes, currently matching 
  % element sizes
 
- nx=30*(q+1)+1;
+ nx=40*(q+1)+1;
 
- hFD=x_l/(nx-1); hdG=3*hFD;
+ hFD=x_l/(nx-1); hdG=4*hFD;
 
  hy=(y_l-GammaCoord)/(nx-1);
 

@@ -17,7 +17,7 @@ function [PFD2dG,PdG2FD]=NewGlueProjections(ndG,order,flag)
     M1=sym(1/2*NewoneDimMassMatrix(@LagrangeRbf,order+1));
     M2=sym(1/(2*scaling)*kron(eye(scaling),NewoneDimMassMatrix(@LagrangeRbf,order+1)));
     
-    p12loc=sym(Vandermonde(X2,order))/sym(Vandermonde(X1,order))
+    p12loc=sym(Vandermonde(X2,order))/sym(Vandermonde(X1,order));
     
     p21loc=M1\((p12loc'*M2));
 
