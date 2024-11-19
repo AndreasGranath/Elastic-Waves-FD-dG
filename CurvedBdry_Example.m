@@ -4,22 +4,15 @@
 GammaCoord=1/5;
  x_l=1; y_l=1;
 
+
 % Initialize dG geometry
 
-rect=[3 4 0 x_l x_l 0 GammaCoord GammaCoord 0 0]';
-gd=rect;
-sf = 'rect';
-ns = char('rect');
-ns = ns';
-
-g = decsg(gd,sf,ns);
-
-model = createpde(1);
-gg=geometryFromEdges(model,g);
-
+model = createpde;
+gg=geometryFromEdges(model,@bdry_fnc);
+mesh_FEM=generateMesh(model);
 % Set material parameters and densities
-mu1=0.1; lambda1=1; rho1=1;
-mu2=0.2; lambda2=3; rho2=1.9999;
+mu1=1; lambda1=1; rho1=1;
+mu2=1; lambda2=1; rho2=1;
 
 mat_param=[mu1,lambda1,rho1,mu2,lambda2,rho2];
 
@@ -148,7 +141,7 @@ for i=1:NumTimeSteps-1
       u3=2*u2-u1+dt.^2.*k1+dt^2*k2;
       u1=u2; u2=u3;
 
-      if max(u3)>1e3
+      if max(u3)>1.1
         disp("Solution has diverged")
         break
       end
@@ -197,3 +190,4 @@ Error(q)=sqrt(FDError(q)^2+dGL2Error(q)^2);
  end
 
 %save("CurvedEOC_4thOrder.mat","mat_param","tau","dt","tend","Error","EOC")
+
