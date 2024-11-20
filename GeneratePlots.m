@@ -80,29 +80,31 @@ view(2)
 %colorbar
 
 %%
-load("UpperSurvey.mat")
-NS=[length(nonzeros(US(2,:)));length(nonzeros(US(4,:)));length(nonzeros(US(6,:)));length(nonzeros(US(8,:)))]
+close all
+
+load("PartialGaussianSurvey.mat")
+NS=[length(nonzeros(US1(2,:)));length(nonzeros(US1(4,:)));length(nonzeros(US1(6,:)));length(nonzeros(US1(8,:)))]
 figure
-plot(US(2,6:6:NS(1)),US(1,6:6:NS(1)),'LineWidth',1.5)
+plot(US1(2,6:6:NS(1)),US1(1,6:6:NS(1)),'LineWidth',1.5)
 hold on
-plot(US(4,8:8:NS(2)),US(3,8:8:NS(2)),'LineWidth',1.5)
-plot(US(6,12:12:NS(3)),US(5,12:12:NS(3)),'LineWidth',1.5)
-plot(US(8,16:16:NS(4)),US(7,16:16:NS(4)),'LineWidth',1.5)
-legend("h=1/60","h=1/80","h=1/120","h=1/160")
+plot(US1(4,8:8:NS(2)),US1(3,8:8:NS(2)),'LineWidth',1.5)
+plot(US1(6,12:12:NS(3)),US1(5,12:12:NS(3)),'LineWidth',1.5)
+%plot(US(8,16:16:NS(4)),US(7,16:16:NS(4)),'LineWidth',1.5)
+legend("h=1/60","h=1/80","h=1/120","h=1/160","location","northeast")
 xlabel("time $t$","interpreter","latex")
-ylabel("$|u(0.1,1.8,t)|$","Interpreter","latex")
+ylabel("$|u(0.4,0.9,t)|$","Interpreter","latex")
 ax=gca;
 ax.FontSize=16;
 
-load("LowerSurvey.mat")
+NS=[length(nonzeros(US2(2,:)));length(nonzeros(US2(4,:)));length(nonzeros(US2(6,:)));length(nonzeros(US2(8,:)))]
 figure
-plot(US(2,(NS(1)-1)/2:6:NS(1)),US(1,(NS(1)-1)/2:6:NS(1)),'LineWidth',1.5)
+plot(US2(2,6:6:NS(1)),US2(1,6:6:NS(1)),'LineWidth',1.5)
 hold on
-plot(US(4,(NS(2)-1)/2:8:NS(2)),US(3,(NS(2)-1)/2:8:NS(2)),'LineWidth',1.5)
-plot(US(6,(NS(3)-1)/2:12:NS(3)),US(5,(NS(3)-1)/2:12:NS(3)),'LineWidth',1.5)
-plot(US(8,(NS(4)-1)/2:16:NS(4)),US(7,(NS(4)-1)/2:16:NS(4)),'LineWidth',1.5)
+plot(US2(4,8:8:NS(2)),US2(3,8:8:NS(2)),'LineWidth',1.5)
+plot(US2(6,12:12:NS(3)),US2(5,12:12:NS(3)),'LineWidth',1.5)
+%plot(US(8,(NS(4)-1)/2:16:NS(4)),US(7,(NS(4)-1)/2:16:NS(4)),'LineWidth',1.5)
 
-legend("h=1/60","h=1/80","h=1/120","h=1/160","exact")
+legend("h=1/60","h=1/80","h=1/120","h=1/160","location","northwest")
 xlabel("time $t$","interpreter","latex")
 ylabel("$|u(0.1,1.8,t)|$","Interpreter","latex")
 ax=gca;
