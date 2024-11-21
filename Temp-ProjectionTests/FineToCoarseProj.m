@@ -22,27 +22,24 @@ for i=1:Na
     
     % Construct operator from coarse element to fine element
 
-    x_c=AddLagrangeNodes([x_l,x_r],order);
-    x_f=AddLagrangeNodes(xg(k_g),order);
+    x_c=sym(AddLagrangeNodes([x_l,x_r],order));
+    x_f=sym(AddLagrangeNodes(xg(k_g),order));
     Ng=length(k_g);
 
-    V_c=Vandermonde(x_c,order);
-    V_f=Vandermonde(x_f,order);
+    V_c=sym(Vandermonde(x_c,order));
+    V_f=sym(Vandermonde(x_f,order));
     Pc2f_loc=V_f/V_c;
 
-    M_c_loc=(x_r-x_l)/2*NewoneDimMassMatrix(@LagrangeRbf,order+1);
-    M_f_loc=zeros((Ng-1)*N,(Ng-1)*N);
+    M_c_loc=(x_r-x_l)/2*sym(NewoneDimMassMatrix(@LagrangeRbf,order+1));
+    M_f_loc=sym(zeros((Ng-1)*N,(Ng-1)*N));
+
     for j=1:Ng-1
         h_f=x_f(N*j)-x_f(1+N*(j-1));
-        M_f_loc(1+N*(j-1):N*j,1+N*(j-1):N*j)=h_f/2*NewoneDimMassMatrix(@LagrangeRbf,order+1);  
+        M_f_loc(1+N*(j-1):N*j,1+N*(j-1):N*j)=sym(h_f/2*NewoneDimMassMatrix(@LagrangeRbf,order+1));  
     end
 
     Pf2c_loc=M_c_loc\((M_f_loc*Pc2f_loc)');
 
-    diffMax=max(Pf2c_loc*x_f'-x_c');
-    if diffMax>1e-10
-        1
-    end
 
     ind_c=1+(i-1)*N;
     ind_f=(k_g(1)-1)*N+1;
@@ -52,6 +49,6 @@ for i=1:Na
 
            
 end
-2
+
 
 end

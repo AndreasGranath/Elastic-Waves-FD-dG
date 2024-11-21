@@ -113,13 +113,13 @@ InitGuess=zeros(length(vars),1);
 
 % Currently set to use "fminunc" for both minimizations, change these
 % manually
-%options=optimoptions('fminunc','MaxFunctionEvaluations',1e6,'MaxIterations',1e5,'OptimalityTolerance',1e-7);
-   options=optimset('MaxFunEvals',1e6,'MaxIter',1e5,'TolX',1e-7)
-f=fminsearch(@(x)Eigen_Value_opt(Pf1,Pf2,x'),InitGuess,options);
+options=optimoptions('fminunc','MaxFunctionEvaluations',1e6,'MaxIterations',1e5,'OptimalityTolerance',1e-7);
+   %options=optimset('MaxFunEvals',1e6,'MaxIter',1e5,'TolX',1e-7)
+f=fminunc(@(x)Eigen_Value_opt(Pf1,Pf2,x'),InitGuess,options);
 
 % Immediately optimize over l^2-error
 
-g=fminsearch(@(x)l2error_good_bad(Pf1,Pf2,x,xa',xg',order),f,options);
+g=fminunc(@(x)l2error_good_bad(Pf1,Pf2,x,xa',xg',order),f,options);
 
 % Insert optimzed coefficients
 PA2B=double(subs(PA2B,vars,g'));

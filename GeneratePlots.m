@@ -1,56 +1,106 @@
 %% Add "Data" folder to path before running this code
 
 close all
+addpath('NewData\')
 %% Plot discrete errors for the trigonometric experiment in a continuous material
 figure
 
-Hq=[1/20,1/30,1/40,1/50,1/60,1/70];
-load("Trigonometric_EOC_4thOrder.mat")
+%Hq=[1/20,1/30,1/40,1/50,1/60,1/70];
+load("ContinuousExperiment4thOrder.mat")
 
-loglog(Hq,Error(1:6),'-o','LineWidth',1.5,'Color','red')
+loglog(Hq(1:6),Error(1:6),'-o','LineWidth',1.5,'Color','red')
 hold on
-loglog(Hq,1305.*Hq.^4,'-.','LineWidth',1.5,'Color','red')
+loglog(Hq(1:6),1305.*Hq(1:6).^4,'-.','LineWidth',1.5,'Color','red')
 
-load("Trigonometric_EOC_6thOrder.mat")
-loglog(Hq,Error,'-x','LineWidth',1.5,'Color','blue')
+load("ContinuousExperiment6thOrder.mat")
+loglog(Hq(1:6),Error(1:6),'-x','LineWidth',1.5,'Color','blue')
 hold on
-loglog(Hq,10000.*Hq.^5,'--','LineWidth',1.5,'Color','blue')
+loglog(Hq(1:6),10000.*Hq(1:6).^5,'--','LineWidth',1.5,'Color','blue')
 legend("4th order","$h^4$","6th order","$h^5$","Interpreter","latex","Location","southeast")
-xlabel("h","Interpreter","latex")
+xlabel("$h$","Interpreter","latex")
 ylabel("Discrete error")
-fontsize(gcf,20,"points")
+fontsize(gcf,15,"points")
+%% Plot discrete errors for the trigonometric experiment with curved boundary
+
+figure
+
+%Hq=[1/20,1/30,1/40,1/50,1/60,1/70];
+load("CurvedBdryErrors4thOrder.mat")
+
+loglog(Hq(1:6),Error(1:6),'-o','LineWidth',1.5,'Color','red')
+hold on
+loglog(Hq(1:6),90.*Hq(1:6).^4,'-.','LineWidth',1.5,'Color','red')
+
+load("CurvedBdryErrors6thOrder.mat")
+loglog(Hq(1:6),Error(1:6),'-x','LineWidth',1.5,'Color','blue')
+hold on
+loglog(Hq(1:6),200.*Hq(1:6).^5,'--','LineWidth',1.5,'Color','blue')
+legend("4th order","$h^4$","6th order","$h^5$","Interpreter","latex","Location","southeast")
+xlabel("$h$","Interpreter","latex")
+ylabel("Discrete error")
+fontsize(gcf,15,"points")
+%% Plot discrete errors for the fine FD mesh example
+figure
+
+Hq=1./(10*[2:1:13]);
+load("FineFDExperiment4thOrder.mat","Error")
+
+loglog(Hq(7:12),Error(7:12),'-o','LineWidth',1.5,'Color','red')
+hold on
+loglog(Hq(7:12),15.*Hq(7:12).^4,'-.','LineWidth',1.5,'Color','red')
+
+load("FineFDExperiment6thOrder.mat","Error")
+loglog(Hq(7:12),Error(7:12),'-x','LineWidth',1.5,'Color','blue')
+hold on
+loglog(Hq(7:12),10.*Hq(7:12).^5,'--','LineWidth',1.5,'Color','blue')
+legend("4th order","$h^4$","6th order","$h^5$","Interpreter","latex","Location","southeast")
+xlabel("$h$","Interpreter","latex")
+ylabel("Discrete error")
+fontsize(gcf,15,"points")
+%% Plot the number of DOFs in the FD and dG domains when FD and dG nodes align
+load("ContinuousExperiment4thOrder.mat","SystemSizedG","SystemSizeFD")
+Hq=1./(10*[2:1:13]);
+
+loglog(Hq(7:12),SystemSizedG(7:12),'-o','LineWidth',1.5)
+hold on
+loglog(Hq(7:12),SystemSizeFD(7:12),'-x','LineWidth',1.5)
+load("ContinuousExperiment6thOrder.mat","SystemSizedG","SystemSizeFD")
+loglog(Hq(7:12),SystemSizedG(7:12),'--','LineWidth',1.5)
+hold on
+loglog(Hq(7:12),SystemSizeFD(7:12),'-.','LineWidth',1.5)
 
 %% Plot discrete errors from the Stoneley experiment
 figure
 % Plot Stoneley errors
-Hq=[1/20,1/30,1/40,1/50,1/60,1/70];
+
 load("Stoneley_EOC_4thOrder.mat")
 
-loglog(Hq,Error,'-o','LineWidth',1.5,'Color','red')
+loglog(Hq(7:12),Error(7:12),'-o','LineWidth',1.5,'Color','red')
 hold on
-loglog(Hq,4e4.*Hq.^4,'-.','LineWidth',1.5,'Color','red')
+loglog(Hq(7:12),3e4.*Hq(7:12).^4,'-.','LineWidth',1.5,'Color','red')
 
 load("Stoneley_EOC_6thOrder.mat")
-loglog(Hq,Error,'-x','LineWidth',1.5,'Color','blue')
+loglog(Hq(7:12),Error(7:12),'-x','LineWidth',1.5,'Color','blue')
 hold on
-loglog(Hq,4e5.*Hq.^5,'--','LineWidth',1.5,'Color','blue')
-legend("4th order","$h^4$","6th order","$h^6$","Interpreter","latex","Location","southeast")
-xlabel("h","Interpreter","latex")
+loglog(Hq(7:12),4.5e5.*Hq(7:12).^5,'--','LineWidth',1.5,'Color','blue')
+legend("4th order","$h^4$","6th order","$h^5$","Interpreter","latex","Location","southeast")
+xlabel("$h$","Interpreter","latex")
 ylabel("Discrete error")
-fontsize(gcf,20,"points")
+fontsize(gcf,15,"points")
 %% Plot the eigenvalues of the semidiscretizations with shifted node
 
 figure
-load("ShiftedEigenvalues.mat")
-delta=[1e-6 5e-6 1e-5 5e-5 5e-5 1e-4 5e-4 1e-3 5e-3 1e-2 5e-2];
-semilogx(delta,EIGS(1,1:end-1),'-x','LineWidth',1.5)
+load("ShiftedSpectrumTest.mat","shift","Spectrum")
+%delta=[1e-6 5e-6 1e-5 5e-5 5e-5 1e-4 5e-4 1e-3 5e-3 1e-2 5e-2];
+semilogx(shift,Spectrum(1,:),'-x','LineWidth',1.5)
 hold on
-semilogx(delta,EIGS(2,1:end-1),'-o','LineWidth',1.5)
-semilogx(delta,EIGS(3,1:end-1),'-^','LineWidth',1.5)
-semilogx(delta,EIGS(4,1:end-1),'-v','LineWidth',1.5)
+semilogx(shift,Spectrum(2,:),'-o','LineWidth',1.5)
+semilogx(shift,Spectrum(3,:),'-^','LineWidth',1.5)
+semilogx(shift,Spectrum(4,:),'-v','LineWidth',1.5)
 xlabel("Shift parameter $\delta$","Interpreter","latex")
 ylabel("$\max_i|e_i|$","Interpreter","latex")
 legend("$h=1/10$","$h=1/15$","$h=1/20$","$h=1/30$","Interpreter","latex","location","best")
+axis([0 0.1 1.6e4 2.2e4])
 fontsize(gcf,15,"points")
 
 %% Plot Gaussian pulse saved at six different time steps in U, U(1,:),U(2,:),U(5,:) and U(6,:) used in manuscript
@@ -82,30 +132,31 @@ view(2)
 %%
 close all
 
-load("PartialGaussianSurvey.mat")
-NS=[length(nonzeros(US1(2,:)));length(nonzeros(US1(4,:)));length(nonzeros(US1(6,:)));length(nonzeros(US1(8,:)))]
+load("UpperSurvey.mat")
+NS=[length(nonzeros(US(2,:)));length(nonzeros(US(4,:)));length(nonzeros(US(6,:)));length(nonzeros(US(8,:)))]
 figure
-plot(US1(2,6:6:NS(1)),US1(1,6:6:NS(1)),'LineWidth',1.5)
+plot(US(2,6:6:NS(1)),US(1,6:6:NS(1)),'LineWidth',1.5)
 hold on
-plot(US1(4,8:8:NS(2)),US1(3,8:8:NS(2)),'LineWidth',1.5)
-plot(US1(6,12:12:NS(3)),US1(5,12:12:NS(3)),'LineWidth',1.5)
-%plot(US(8,16:16:NS(4)),US(7,16:16:NS(4)),'LineWidth',1.5)
-legend("h=1/60","h=1/80","h=1/120","h=1/160","location","northeast")
-xlabel("time $t$","interpreter","latex")
-ylabel("$|u(0.4,0.9,t)|$","Interpreter","latex")
-ax=gca;
-ax.FontSize=16;
-
-NS=[length(nonzeros(US2(2,:)));length(nonzeros(US2(4,:)));length(nonzeros(US2(6,:)));length(nonzeros(US2(8,:)))]
-figure
-plot(US2(2,6:6:NS(1)),US2(1,6:6:NS(1)),'LineWidth',1.5)
-hold on
-plot(US2(4,8:8:NS(2)),US2(3,8:8:NS(2)),'LineWidth',1.5)
-plot(US2(6,12:12:NS(3)),US2(5,12:12:NS(3)),'LineWidth',1.5)
-%plot(US(8,(NS(4)-1)/2:16:NS(4)),US(7,(NS(4)-1)/2:16:NS(4)),'LineWidth',1.5)
-
+plot(US(4,8:8:NS(2)),US(3,8:8:NS(2)),'LineWidth',1.5)
+plot(US(6,12:12:NS(3)),US(5,12:12:NS(3)),'LineWidth',1.5)
+plot(US(8,16:16:NS(4)),US(7,16:16:NS(4)),'LineWidth',1.5)
 legend("h=1/60","h=1/80","h=1/120","h=1/160","location","northwest")
 xlabel("time $t$","interpreter","latex")
 ylabel("$|u(0.1,1.8,t)|$","Interpreter","latex")
+ax=gca;
+ax.FontSize=16;
+
+load("LowerSurvey.mat")
+NS=[length(nonzeros(US(2,:)));length(nonzeros(US(4,:)));length(nonzeros(US(6,:)));length(nonzeros(US(8,:)))]
+figure
+plot(US(2,6:6:NS(1)),US(1,6:6:NS(1)),'LineWidth',1.5)
+hold on
+plot(US(4,8:8:NS(2)),US(3,8:8:NS(2)),'LineWidth',1.5)
+plot(US(6,12:12:NS(3)),US(5,12:12:NS(3)),'LineWidth',1.5)
+plot(US(8,(NS(4)-1)/2:16:NS(4)),US(7,(NS(4)-1)/2:16:NS(4)),'LineWidth',1.5)
+
+legend("h=1/60","h=1/80","h=1/120","h=1/160","location","northwest")
+xlabel("time $t$","interpreter","latex")
+ylabel("$|u(0.1,0.9,t)|$","Interpreter","latex")
 ax=gca;
 ax.FontSize=16;
