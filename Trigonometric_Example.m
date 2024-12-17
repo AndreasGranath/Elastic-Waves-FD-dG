@@ -35,12 +35,12 @@ v_s=max([sqrt((2*mu1+lambda1)/rho2),sqrt((2*mu2+lambda2)/rho2)]);
  
 
  % Initialize vector for errors
-Num_Refinements=12;
+Num_Refinements=5;
  SystemSizeFD=zeros(1,Num_Refinements);
  SystemSizedG=zeros(1,Num_Refinements);
-Error=zeros(1,Num_Refinements); order=4;
+Error=zeros(1,Num_Refinements);
 
-Hq_dG=zeros(1,Num_Refinements); Hq=zeros(1,Num_Refinements);
+Hq_dG=zeros(1,Num_Refinements); Hq=zeros(2,Num_Refinements);
 
 dGL2Error=zeros(1,Num_Refinements); 
 
@@ -48,15 +48,22 @@ FDError=zeros(1,Num_Refinements);
 
 EOC=zeros(1,Num_Refinements-1);
 
+
+order=3;
+  
+
+
+
+
  % Loop over mesh refinements
  for q=1:Num_Refinements
 
  % Set mesh sizes, discetize FD side with nx nodes, currently matching 
  % element sizes
 
- nx=40*(q+1)+1;
+ nx=order*10*(q+13)+1;
 
- hFD=x_l/(nx-1); hdG=4*hFD;
+ hFD=x_l/(nx-1); hdG=order*hFD;
 
  hy=(y_l-GammaCoord)/(nx-1);
 
@@ -83,7 +90,7 @@ w1=@(t,x,y) sin(5.*x+7.*y-t); w2=@(t,x,y) cos(7.*x+5.*y-2.*t);
 uex=@(t,x,y) [w1(t,x,y);w2(t,x,y)];
 
 % Set time stepping properties
- tend=1; dt=0.0125*hdG; NumTimeSteps=round(tend/dt); tend=NumTimeSteps*dt;
+ tend=1; dt=0.0125*hFD; NumTimeSteps=round(tend/dt); tend=NumTimeSteps*dt;
 
 
 
@@ -112,13 +119,13 @@ u2=real([uex(dt,xx,yy);uex(dt,P(1,:)',P(2,:)')]);
 u1=real([uex(0,xx,yy);uex(0,P(1,:)',P(2,:)')]);
 
 % Obtain p1 nodes from the dG triangulation for plotting purposes only
-% for i=1:length(tdG(1,:))
-%     p1_indices(1+3*(i-1):3*i)=[1:3]+10*(i-1);
-% end
-% 
-% for i=1:length(T(1,:))
-%     P_linear(:,1+3*(i-1):3*i)=full(P(:,1+10*(i-1):3+10*(i-1)));
-% end
+for i=1:length(tdG(1,:))
+    p1_indices(1+3*(i-1):3*i)=[1:3]+10*(i-1);
+end
+
+for i=1:length(T(1,:))
+    P_linear(:,1+3*(i-1):3*i)=full(P(:,1+10*(i-1):3+10*(i-1)));    
+end
 
 % Perform explicit time stepping 
 
@@ -130,7 +137,7 @@ for i=1:NumTimeSteps-1
      tt=i*dt;
  
 
-      k1=ABulk*u2+dt^2/12*ABulk*(ABulk*u2);
+       k1=ABulk*u2+dt^2/12*ABulk*(ABulk*u2);
 
       k2=fload(tt)+dt^2/12*(ABulk*fload(tt)+fd_load(tt));
 
@@ -170,7 +177,6 @@ end
 Hq(q)=hFD; Hq_dG(q)=hdG;
 
  
-
 % Calculate discrete FD and dG errors, combine into a total discrete error
 
 FDError(q) = sqrt(real((u3(1:2*nx*ny)-uex(tt+dt,xx,yy)))'*HH*(real(u3(1:2*nx*ny)-uex(tt+dt,xx,yy))));
@@ -185,8 +191,9 @@ Error(q)=sqrt(FDError(q)^2+dGL2Error(q)^2);
     end
  end
 
+
  % plot errors
  loglog(Hq,Error,'-o','LineWidth',1.5,'Color','red')
  hold on
- loglog(Hq,Hq.^5,'--','LineWidth',1.5,'Color','red')
+ loglog(Hq,Hq.^4,'--','LineWidth',1.5,'Color','red')
 
