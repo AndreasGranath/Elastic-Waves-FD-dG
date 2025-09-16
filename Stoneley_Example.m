@@ -199,7 +199,8 @@ Error(q)=sqrt(FDError(q)^2+dGL2Error(q)^2);
    if q>1    
      EOC(q)=log(Error(q-1)/Error(q))/log(Hq_dG(q-1)/Hq_dG(q));
    
-    end
+   end
+   disp(['Error at refinement ' num2str(q) ' is ' num2str(Error(q)) ' and EOC is ' num2str(EOC(q))])
  end
 
 %save("Stoneley_EOC_6thOrder.mat","mat_param","tau","dt","tend","Error","EOC")

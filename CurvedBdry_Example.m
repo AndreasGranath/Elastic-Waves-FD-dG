@@ -163,7 +163,8 @@ Error(z,q)=sqrt(FDError(q)^2+dGL2Error(q)^2)
    if q>1    
      EOC(z,q)=log(Error(z,q-1)/Error(z,q))/log(Hq_dG(q-1)/Hq_dG(q))
    
-    end
+   end
+    disp(['Error at refinement number ' num2str(q) ' is ' num2str(Error(z,q)) 'and EOC is ' num2str(EOC(z,q))])
  end
 end
 
