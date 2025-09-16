@@ -45,6 +45,8 @@ FDError=zeros(1,Num_Refinements);
 
 EOC=zeros(1,Num_Refinements-1);
 
+% Define problem type
+ProblemType = 'Stoneley';
  % Loop over mesh refinements
  for q=1:Num_Refinements
 
@@ -66,7 +68,7 @@ EOC=zeros(1,Num_Refinements-1);
 
 % Call on coupled elastic solver 
 
-[TdG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E,EdG_W,EdG_S,EdG,NDoFs,tdG,pdG,Mbdry,Nglob] = Coupled_Elastic_Solver(hdG,hFD,hy,mat_param,tau,GammaCoord,mesh_FEM,order,x_l,y_l,0);
+[TdG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E,EdG_W,EdG_S,EdG,NDoFs,tdG,pdG,Mbdry,Nglob] = Coupled_Elastic_Solver(hdG,hFD,hy,mat_param,tau,GammaCoord,mesh_FEM,order,x_l,y_l,0,ProblemType);
 Mbdry=kron(eye(2),Mbdry);
 % Assemble analytic Stoneley solution and obtain the wave speed c
 
@@ -200,4 +202,4 @@ Error(q)=sqrt(FDError(q)^2+dGL2Error(q)^2);
     end
  end
 
-save("Stoneley_EOC_6thOrder.mat","mat_param","tau","dt","tend","Error","EOC")
+%save("Stoneley_EOC_6thOrder.mat","mat_param","tau","dt","tend","Error","EOC")

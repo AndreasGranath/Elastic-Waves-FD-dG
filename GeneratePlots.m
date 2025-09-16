@@ -1,7 +1,7 @@
 %% Add "Data" folder to path before running this code
 
 close all
-addpath('NewData\')
+addpath('Data\')
 %% Plot discrete errors for the trigonometric experiment in a continuous material
 figure
 
@@ -160,3 +160,55 @@ xlabel("time $t$","interpreter","latex")
 ylabel("$|u(0.1,0.9,t)|$","Interpreter","latex")
 ax=gca;
 ax.FontSize=16;
+
+%% Plot mesh
+close all
+
+hFD=1/90;
+hdG=1/30;
+GammaCoord=1/5;
+
+rect=[3 4 0 1 1 0 GammaCoord GammaCoord 0 0]';
+gd=rect;
+sf = 'rect';
+ns = char('rect');
+ns = ns';
+
+g = decsg(gd,sf,ns);
+
+model = createpde(1);
+gg=geometryFromEdges(model,g);
+
+mesh_FEM=generateMesh(model,'Hmax',hdG,'GeometricOrder','linear');
+
+[pdG,edG,tdG]=meshToPet(mesh_FEM);
+ tdG(4,:)=[];
+
+ [X,Y]=meshgrid([0:hFD:1],[GammaCoord:hFD:1]);
+
+ mesh(X,Y,0.*X,'LineWidth',1.5,'EdgeColor','[0 0 0]','FaceColor','none')
+ hold on
+ triplot(tdG',pdG(1,:),pdG(2,:),'LineWidth',1.5,'Color','[0 0 0]')
+ axis off
+ axis equal
+
+ 
+
+
+%% Plot discrete errors from the aligning DOF experiment
+close all
+figure
+% Plot Stoneley errors
+
+load("FineMeshExperimentsRoughErrors")
+
+loglog(h,errors4,'-o','LineWidth',1.5,'Color','red')
+hold on
+loglog(h,1.15e-3*h.^4,'-.','LineWidth',1.5,'Color','red')
+loglog(h,errors6,'-x','LineWidth',1.5,'Color','blue')
+loglog(h,2e-4*h.^5,'--','LineWidth',1.5,'Color','blue')
+
+legend("4th order","$h^4$","6th order","$h^5$","Interpreter","latex","Location","best")
+xlabel("$h$","Interpreter","latex")
+ylabel("Discrete error")
+fontsize(gcf,15,"points")

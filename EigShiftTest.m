@@ -51,6 +51,8 @@ h=[1/10,1/15,1/20,1/30];
 shift=[1e-6,5e-6,1e-5,5e-5,1e-4,5e-4,1e-3,5e-3,1e-2,5e-2,1e-1];
 
 Spectrum=zeros(4,11);
+% Define problem type
+ProblemType = 'Trigonometric'
  % Loop over mesh refinements
 
  for q=1:4
@@ -73,7 +75,7 @@ Spectrum=zeros(4,11);
 
 % Call on coupled elastic solver 
 
-[TdG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E,EdG_W,EdG_S,EdG,NDoFs,tdG,pdG,Mbdry,Nglob] = Coupled_Elastic_Solver(hdG,hFD,hy,mat_param,tau,GammaCoord,mesh_FEM,order,x_l,y_l,shift(s));
+[TdG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E,EdG_W,EdG_S,EdG,NDoFs,tdG,pdG,Mbdry,Nglob] = Coupled_Elastic_Solver(hdG,hFD,hy,mat_param,tau,GammaCoord,mesh_FEM,order,x_l,y_l,shift(s),ProblemType);
  
  Spectrum(q,s)=h(q)^2*max(abs(eig(full(ABulk))))
  end

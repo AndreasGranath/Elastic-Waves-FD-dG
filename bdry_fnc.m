@@ -12,6 +12,6 @@ function [x,y]=bdry_fnc(bs,s)
      case 2
          x=(s>=0 & s<1)+(2-s).*(s>=1 & s<2)-(3-s).*(s>=3 & s<=4);
          y=GammaCoord.*s.*(s>=0 & s<1)+GammaCoord.*(s>=1 & s<2)+...
-          GammaCoord.*(3-s).*(s>=2 & s<3)+0.4.*(s-3).*(s-4).*exp(-10.*(s-3.5).^2).*(s>=3 & s<=4);
+         GammaCoord.*(3-s).*(s>=2 & s<3)+0.4.*(s-3).*(s-4).*exp(-10.*(s-3.5).^2).*(s>=3 & s<=4);
  end
 end

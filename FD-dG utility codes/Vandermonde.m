@@ -17,7 +17,7 @@ function V=Vandermonde(v,order)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-    V=zeros(length(v),order+1);
+    V=sym(zeros(length(v),order+1));
     for i=1:order+1
         V(:,i)=v.^(i-1);
     end

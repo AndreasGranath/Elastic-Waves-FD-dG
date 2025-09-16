@@ -1,4 +1,7 @@
+clear 
 
+addpath('FD-dG Projection operators\')
+addpath('FD-dG utility codes\')
 % Set up a rectangular domain [0,x_l] x [0, y_l] partitioned into the two
 % subdomains [0,x_l] x [0,GammaCoord] and [0,x_l] x [GammaCoord,1] 
 
@@ -49,11 +52,13 @@ FDError=zeros(1,Num_Refinements);
 EOC=zeros(1,Num_Refinements-1);
 
 
+% Set order, note that this is the DG order!
 order=3;
   
 
+% Set flag depicting the type of experiment
 
-
+ProblemType='Trigonometric';
 
  % Loop over mesh refinements
  for q=1:Num_Refinements
@@ -61,9 +66,11 @@ order=3;
  % Set mesh sizes, discetize FD side with nx nodes, currently matching 
  % element sizes
 
- nx=order*10*(q+13)+1;
+ nx=10*(q+1)+1;
+ %nx=order*10*(q+13)+1;
 
- hFD=x_l/(nx-1); hdG=order*hFD;
+
+ hFD=x_l/(nx-1); hdG=hFD;
 
  hy=(y_l-GammaCoord)/(nx-1);
 
@@ -76,7 +83,7 @@ order=3;
 
 % Call on coupled elastic solver 
 
-[TdG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E,EdG_W,EdG_S,EdG,NDoFs,tdG,pdG,Mbdry,Nglob] = Coupled_Elastic_Solver(hdG,hFD,hy,mat_param,tau,GammaCoord,mesh_FEM,order,x_l,y_l,0);
+[TdG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E,EdG_W,EdG_S,EdG,NDoFs,tdG,pdG,Mbdry,Nglob] = Coupled_Elastic_Solver(hdG,hFD,hy,mat_param,tau,GammaCoord,mesh_FEM,order,x_l,y_l,0,ProblemType);
 Mbdry=kron(eye(2),Mbdry);
 
 % Obtain FD and dG system sizes
@@ -118,14 +125,14 @@ fload=@(t) real([1/rho1*Tr_FD(t);1/rho2*Tr_dG(t)]+[1/rho1*f_FD(t,xx,yy);1/rho2*f
 u2=real([uex(dt,xx,yy);uex(dt,P(1,:)',P(2,:)')]); 
 u1=real([uex(0,xx,yy);uex(0,P(1,:)',P(2,:)')]);
 
-% Obtain p1 nodes from the dG triangulation for plotting purposes only
-for i=1:length(tdG(1,:))
-    p1_indices(1+3*(i-1):3*i)=[1:3]+10*(i-1);
-end
-
-for i=1:length(T(1,:))
-    P_linear(:,1+3*(i-1):3*i)=full(P(:,1+10*(i-1):3+10*(i-1)));    
-end
+% % Obtain p1 nodes from the dG triangulation for plotting purposes only
+% for i=1:length(tdG(1,:))
+%     p1_indices(1+3*(i-1):3*i)=[1:3]+10*(i-1);
+% end
+% 
+% for i=1:length(T(1,:))
+%     P_linear(:,1+3*(i-1):3*i)=full(P(:,1+10*(i-1):3+10*(i-1)));    
+% end
 
 % Perform explicit time stepping 
 
@@ -188,7 +195,9 @@ Error(q)=sqrt(FDError(q)^2+dGL2Error(q)^2);
    if q>1    
      EOC(q)=log(Error(q-1)/Error(q))/log(Hq_dG(q-1)/Hq_dG(q))
    
-    end
+   end
+
+   disp(['Error at refinement number ' num2str(q) ' is ' num2str(Error(q)) 'and EOC is ' num2str(EOC(q))])
  end
 
 

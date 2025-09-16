@@ -1,4 +1,4 @@
-function  [TractiondG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E,EdG_W,EdG_S,EdG,NDoFs,tdG,pdG,Mbdry,Nglob,Pu2wG] = Coupled_Elastic_Solver(hdG,hFD,hy,mat_param,tau,GammaCoord,mesh_FEM,order,x_l,y_l,shift)
+function  [TractiondG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E,EdG_W,EdG_S,EdG,NDoFs,tdG,pdG,Mbdry,Nglob,Pu2wG] = Coupled_Elastic_Solver(hdG,hFD,hy,mat_param,tau,GammaCoord,mesh_FEM,order,x_l,y_l,shift,ProblemType)
     mu=mat_param(1); lambda=mat_param(2);  rho1=mat_param(3);
     mu2=mat_param(4); lambda2=mat_param(5); rho2=mat_param(6);
 
@@ -121,9 +121,19 @@ function  [TractiondG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E
 
     % Modify edge indices depending of what experiment you want to perform
 
-    %EdgeIndices=[20,1,2,19]; % Gaussian pulse in UMU geometry
-    EdgeIndices=[1,2,3,4];    % Trigonometric and stoneley examples
-    %EdgeIndices=[2,1,4,3];   % Curved geometry example
+    
+        if ProblemType == "Gaussian"
+            EdgeIndices=[20,1,2,19]; % Gaussian pulse in UMU geometry
+        elseif ProblemType == "Trigonometric" 
+            EdgeIndices=[1,2,3,4];   % Trigonometric example
+        elseif ProblemType == "Stoneley"
+            EdgeIndices=[1,2,3,4];   % Stoneley example
+        elseif ProblemType ==  "CurvedBdry"
+            EdgeIndices=[2,1,4,3];   % Curved geometry example
+        else
+            disp('Undefined experiment')
+ 
+        end
 
     % Construct matrices picking up DOFS along the boundaries
     [EdG,EdG_t,permInds,indicesOnInterface,EdG_E,EdG_S,EdG_W,bdryIndices,n_E,n_S]=AssembleBoundaryFindingMatrix(edG,tdG,P,T,order,EdgeIndices);

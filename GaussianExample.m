@@ -49,10 +49,14 @@ Bcirc2=[4 0.7 0.0793 0.025 0.05 pi/2 zeros(1,20)]';
 Qs=[20];
  Error=zeros(1,10);
 
+ % Define problem type
+ ProblemType = 'Gaussian';
+
  for q=1:1
 
       
  % Generate P^1 mesh 
+ %nx=21;
  nx=10*Qs(q)+1;
  hFD=x_l/(nx-1); hdG=hFD;
  hy=hFD;
@@ -73,7 +77,7 @@ mat_param=[mu1,lambda1,rho1,mu2,lambda2,rho2];
  tau=60;
 
 
- %%
+
  
 
  tend=3; dt=0.02*hdG; NumTimeSteps=round(tend/dt);
@@ -93,15 +97,13 @@ disp("Determine analytic traction")
 
 
 
-%%
-[TdG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E,EdG_W,EdG_S,EdG,NDoFs,tdG,pdG,Mbdry] = Coupled_Elastic_Solver(hdG,hFD,hy,mat_param,tau,GammaCoord,mesh_FEM,order,x_l,y_l,0);
+
+[TdG,ABulk,xx,X,yy,Y,P,Hx,Hy,HH,Mgamma,M_EW,MI,T,Ex,EN,ES,EdG_E,EdG_W,EdG_S,EdG,NDoFs,tdG,pdG,Mbdry] = Coupled_Elastic_Solver(hdG,hFD,hy,mat_param,tau,GammaCoord,mesh_FEM,order,x_l,y_l,0,ProblemType);
 Survey_index=intersect(find(yy==0.4),find(xx==0.9));
 
-%%
 
 
 
-%%
 
 Mbdry=kron(eye(2),Mbdry);
 
@@ -124,14 +126,14 @@ fload=@(t) real(0*[1/rho1*Tr_FD(t);1/rho2*Tr_dG(t)]+0.*[1/rho1*f_FD(t,xx,yy);1/r
 u2=real([uex(dt,xx,yy);uex(dt,P(1,:)',P(2,:)')]); 
 u1=real([uex(0,xx,yy);uex(0,P(1,:)',P(2,:)')]);
 
-for i=1:length(tdG(1,:))
-    p1_indices(1+3*(i-1):3*i)=[1:3]+10*(i-1);
-end
-
-for i=1:length(T(1,:))
-    P_linear(:,1+3*(i-1):3*i)=full(P(:,1+10*(i-1):3+10*(i-1)));
-    T_linear(1:3,i)=[1:3]+3*(i-1);
-end
+% for i=1:length(tdG(1,:))
+%     p1_indices(1+3*(i-1):3*i)=[1:3]+10*(i-1);
+% end
+% 
+% for i=1:length(T(1,:))
+%     P_linear(:,1+3*(i-1):3*i)=full(P(:,1+10*(i-1):3+10*(i-1)));
+%     T_linear(1:3,i)=[1:3]+3*(i-1);
+% end
 
 U_survey=zeros(1,NumTimeSteps-1);
 TT=zeros(1,NumTimeSteps-1);
