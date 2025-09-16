@@ -1,3 +1,6 @@
+addpath('FD-dG Projection operators\')
+addpath('FD-dG utility codes\')
+
 %% Construct FD geometry
 clear
 

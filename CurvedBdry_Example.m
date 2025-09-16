@@ -1,10 +1,7 @@
-% Set up a rectangular domain [0,x_l] x [0, y_l] partitioned into the two
-% subdomains [0,x_l] x [0,GammaCoord] and [0,x_l] x [GammaCoord,1] 
 clear
 
 addpath('FD-dG utility codes\')
 addpath('FD-dG Projection operators\')
-addpath('Temp-ProjectionTests\')
 for z=1:1
     order=3;
 
